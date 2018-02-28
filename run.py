@@ -9,6 +9,6 @@ elif args == 2:
     filename = sys.argv[1]
     arq = open(filename, 'r')
     s = Scanner(arq)
-    
+    s.scan_file()
 else:
     print ("Argumentos inválidos. Insira apenas o caminho doa rquivo a ser aberto")
