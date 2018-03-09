@@ -22,7 +22,7 @@ class Scanner(object):
 
     def scan_file(self):
         c = self.get_c()
-        while c != '}':
+        while c:
             print("token = " + c)
             print("line = " + str(self.token['ln']))
             print("Column = " + str(self.token['cl']))
