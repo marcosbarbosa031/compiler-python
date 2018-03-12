@@ -4,7 +4,7 @@ from scanner.scanner import Scanner
 args = len(sys.argv)
 
 if args < 2:
-    print ("Insira caminho doa rquivo a ser aberto")
+    print ("Insira o caminho do arquivo a ser aberto")
 elif args == 2:
     filename = sys.argv[1]
     # filename = 'input.txt'
@@ -12,11 +12,11 @@ elif args == 2:
         s = Scanner(arq)
         token = s.scan_file()
         while token:
+            if token == None:
+                exit
             print ("Lexema: "+token['lex'])
             print ("token: "+ str(token['code']))
+            print ('')
             token = s.scan_file()
-    
-
-
 else:
-    print ("Argumentos invalidos. Insira apenas o caminho doa rquivo a ser aberto")
+    print ("Argumentos invalidos. Insira apenas o caminho do arquivo a ser aberto")

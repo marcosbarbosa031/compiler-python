@@ -49,33 +49,54 @@ class Scanner(object):
         return response
 
     def is_valid(self):
-        if self.c == ' ' or self.c == '\n' or self.c == '\t' or self.c == '\r' or self.c == ';' or self.c == '=' or self.c == '!' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '>' or self.c == '<' or self.c == '<=' or self.c == '>=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or not self.c:
+        if self.c == ' ' or self.c == '\n' or self.c == '\t' or self.c == '\r' or self.c == ';' or self.c == '=' or self.c == '!' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '>' or self.c == '<' or self.c == '<=' or self.c == '>=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or not self.c or self.c == '.':
             response = True
         else:
             response = False
         return response
 
-    def scan_file(self):
+    def verify_float(self):
+        self.push_lex()
+        self.get_blank()
         self.c = self.get_c()
-        self.token['lex'] = ""
-        while self.c:
-            # print ("token: "+self.c)
-            # print ("line: "+str(self.token['ln']))
-            # print ("Column: "+ str(self.token['cl']))
-            # print ("\n")
-            while self.is_blank():
-                self.get_blank()
-                self.c = self.get_c()
-            if self.is_digit():
+        if self.is_digit():
+            self.push_lex()
+            self.get_blank()
+            self.c = self.get_c()
+            while self.is_digit():  # Iterate Int
                 self.push_lex()
                 self.get_blank()
                 self.c = self.get_c()
-                while self.is_digit():
+            return self.create_token(Enum.Tdigfloat)
+        else:
+            self.push_lex()
+            print("Erro: Float mal formado\nLinha: {0}\nColuna: {1}\nÚltimo token Lido: {2}".format(
+                self.token['ln'], self.token['cl'], self.token['lex']))
+            return None
+
+    def scan_file(self):
+        self.c = self.get_c()
+        self.token['lex'] = ""
+        while self.c: #Iterate the Archive
+            while self.is_blank(): # Skip the blank (not tokens)
+                self.get_blank()
+                self.c = self.get_c()
+            if self.is_digit(): #Digit Int
+                self.push_lex()
+                self.get_blank()
+                self.c = self.get_c()
+                while self.is_digit(): #Iterate Int
                     self.push_lex()
                     self.get_blank()
                     self.c = self.get_c()
-                if self.is_valid():
+                if self.c == '.': #Float
+                    f = self.verify_float()
+                    return f
+                elif self.is_valid():
                     return self.create_token(Enum.Tdigint)
+            elif self.c == '.': #Float
+                f = self.verify_float()
+                return f  
             
             self.get_blank()
             self.c = self.get_c()
