@@ -10,6 +10,13 @@ elif args == 2:
     # filename = 'input.txt'
     with open(filename, 'r') as arq:
         s = Scanner(arq)
-        s.scan_file()
+        token = s.scan_file()
+        while token:
+            print ("Lexema: "+token['lex'])
+            print ("token: "+ str(token['code']))
+            token = s.scan_file()
+    
+
+
 else:
     print ("Argumentos invalidos. Insira apenas o caminho doa rquivo a ser aberto")
