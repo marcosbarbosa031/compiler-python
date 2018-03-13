@@ -55,6 +55,32 @@ class Scanner(object):
             response = False
         return response
 
+    def is_op_aritmetico(self):
+        if self.c == '+':
+            self.push_lex()
+            self.c = self.get_c()
+            self.create_token(Enum.Tsoma)
+            response = True
+        elif self.c == '-':
+            self.push_lex()
+            self.c = self.get_c()
+            self.create_token(Enum.Tsub)
+            response = True
+        elif self.c == '*':
+            self.push_lex()
+            self.c = self.get_c()
+            self.create_token(Enum.Tmult)
+            response = True
+        elif self.c == '/':
+            self.push_lex()
+            self.c = self.get_c()
+            self.create_token(Enum.Tdivi)
+            response = True
+        else:
+            response = False
+        return response
+        
+
     def verify_float(self):
         self.push_lex()
         self.cont_line()
@@ -101,10 +127,16 @@ class Scanner(object):
             elif self.c == '.': # Float
                 f = self.verify_float()
                 return f  
-            elif self.c == '+':
+            elif self.is_op_aritmetico(): # Arithmetic Operator
+                return self.token
+            elif (self.c >= 'a' and self.c <= 'z') or (self.c >= 'A' and self.c <= 'Z'):
                 self.push_lex()
+                self.cont_line()
                 self.c = self.get_c()
-                return self.create_token(Enum.Tsoma)
+                while (self.c >= 'a' and self.c <= 'z') or (self.c >= 'A' and self.c <= 'Z'):
+                    self.push_lex()
+                    self.cont_line()
+                    self.c = self.get_c()
             self.cont_line()
             self.c = self.get_c()
         # print("Lexema: "+ self.token['lex'])
