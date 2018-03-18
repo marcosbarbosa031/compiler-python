@@ -18,7 +18,6 @@ elif args == 2:
             print ("Lexema: "+token['lex'])
             print ("token: "+ str(token['code']))
             print ('')
-            # s.c = s.get_c()
             token = s.scan_file()
 else:
     print ("Argumentos invalidos. Insira apenas o caminho do arquivo a ser aberto")

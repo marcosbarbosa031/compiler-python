@@ -1,4 +1,5 @@
 from utils import Enum
+import sys
 
 
 class Scanner(object):
@@ -41,45 +42,105 @@ class Scanner(object):
         else:
             self.token['cl'] += 1
 
-    def is_digit(self):
-        if self.c >= '0' and self.c <= '9':
-            response =  True
-        else:
-            response = False
-        return response
-
     def is_valid(self):
-        if self.c == ' ' or self.c == '\n' or self.c == '\t' or self.c == '\r' or self.c == ';' or self.c == '=' or self.c == '!' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '>' or self.c == '<' or self.c == '<=' or self.c == '>=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or not self.c or self.is_digit() or self.c == '.':
+        if self.c == ' ' or self.c == '\n' or self.c == '\t' or self.c == '\r' or self.c == ';' or self.c == '=' or self.c == '!' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '>' or self.c == '<' or self.c == '<=' or self.c == '>=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or not self.c or self.c.isdigit() or self.c == '.':
             response = True
         else:
             response = False
         return response
 
-    def is_op_aritmetico(self):
+    def print_error(self, msg):
+        print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: {3}".format(self.token['ln'], self.token['cl'], self.token['lex'], msg))
+        sys,exit()
+
+    def is_op_arithmetic(self):
         if self.c == '+':
             self.push_lex()
+            self.cont_line()
             self.c = self.get_c()
             self.create_token(Enum.Tsoma)
             response = True
         elif self.c == '-':
             self.push_lex()
+            self.cont_line()
             self.c = self.get_c()
             self.create_token(Enum.Tsub)
             response = True
         elif self.c == '*':
             self.push_lex()
+            self.cont_line()
             self.c = self.get_c()
             self.create_token(Enum.Tmult)
             response = True
         elif self.c == '/':
             self.push_lex()
+            self.cont_line()
             self.c = self.get_c()
             self.create_token(Enum.Tdivi)
             response = True
+        elif self.c == '=':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            if self.c == '=':
+                response = False
+            else:   
+                self.create_token(Enum.Tatrib)
+                response = True
         else:
             response = False
         return response
     
+    def is_op_relational(self):
+        if self.c == '>':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            if self.c == '=':
+                self.push_lex()
+                self.cont_line()
+                self.c = self.get_c()
+                self.create_token(Enum.Tmaior_igual)
+            else:
+                self.create_token(Enum.Tmaior)
+            response = True
+        elif self.c == '<':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            if self.c == '=':
+                self.push_lex()
+                self.cont_line()
+                self.c = self.get_c()
+                self.create_token(Enum.Tmenor_igual)
+            else:
+                self.create_token(Enum.Tmenor)
+            response = True
+        elif self.c == '=':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tigual)
+            response = True
+        elif self.c == '!':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            if self.c == '=':
+                self.push_lex()
+                self.cont_line()
+                self.c = self.get_c()
+                self.create_token(Enum.Tdiferente)
+            else:
+                self.push_lex()
+                self.cont_line()
+                self.print_error("Operador Relacional Diferenca mal formado.")
+                sys.exit()
+            response = True
+        else:
+            response = False
+        return response
+
     def is_reserved_word(self):
         if self.token['lex'] == 'main':
             self.create_token(Enum.Tmain)
@@ -116,24 +177,22 @@ class Scanner(object):
         self.push_lex()
         self.cont_line()
         self.c = self.get_c()
-        if self.is_digit():
+        if self.c.isdigit():
             self.push_lex()
             self.cont_line()
             self.c = self.get_c()
-            while self.is_digit():  # Iterate Int
+            while self.c.isdigit():  # Iterate Int
                 self.push_lex()
                 self.cont_line()
                 self.c = self.get_c()
             if self.c == '.':
                 self.push_lex()
-                print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: Float mal formado".format(self.token['ln'], self.token['cl'], self.token['lex']))
-                return None
+                self.print_error("Float mal formado")
             else:
                 return self.create_token(Enum.Tdigfloat)
         else:
             self.push_lex()
-            print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: Float mal formado".format(self.token['ln'], self.token['cl'], self.token['lex']))
-            return None
+            self.print_error("Float mal formado")
 
     def scan_file(self):
         self.token['lex'] = ""
@@ -143,26 +202,24 @@ class Scanner(object):
                 self.c = self.get_c()
             # if not self.is_valid(): # Verify if is a valid token
             #     self.push_lex()
-            #     print("Erro: Linha: {0} Coluna: {1}\nÚltimo token Lido: {2}: Token inválido".format(
+            #     print("Erro: Linha: {0} Coluna: {1}\nUltimo token Lido: {2}: Token invalido".format(
             #         self.token['ln'], self.token['cl'], self.token['lex']))
             #     return None
-            if self.is_digit(): # Digit Int
+            if self.c.isdigit(): # Digit Int
                 self.push_lex()
                 self.cont_line()
                 self.c = self.get_c()
-                while self.is_digit(): # Iterate while Int
+                while self.c.isdigit(): # Iterate while Int
                     self.push_lex()
                     self.cont_line()
                     self.c = self.get_c()
                 if self.c == '.': # Float
-                    f = self.verify_float()
-                    return f
+                    return self.verify_float()
                 # elif self.is_valid():
                 return self.create_token(Enum.Tdigint)
             elif self.c == '.': # Float
-                f = self.verify_float()
-                return f  
-            elif self.is_op_aritmetico(): # Arithmetic Operator
+                return self.verify_float()
+            elif self.is_op_arithmetic(): # Arithmetic Operator
                 return self.token
             elif self.c.isalpha() or self.c == '_': #identifier (Letters or _ ) Or Reserved Word
                 self.push_lex()
@@ -176,7 +233,8 @@ class Scanner(object):
                     return self.token
                 else:
                     return self.create_token(Enum.Tid)
-            
+            elif self.is_op_relational(): # Relational Operator
+                return self.token
             self.cont_line()
             self.c = self.get_c()
         # print("Lexema: "+ self.token['lex'])
