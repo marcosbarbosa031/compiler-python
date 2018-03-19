@@ -53,6 +53,47 @@ class Scanner(object):
         print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: {3}".format(self.token['ln'], self.token['cl'], self.token['lex'], msg))
         sys,exit()
 
+    def is_special(self):
+        if self.c == '(':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tparenteses_opn)
+            response = True
+        elif self.c == ')':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tparenteses_cls)
+            response = True
+        elif self.c == '{':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tchaves_opn)
+            response = True
+        elif self.c == '}':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tchaves_cls)
+            response = True
+        elif self.c == ';':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tponto_virgula)
+            response = True
+        elif self.c == ',':
+            self.push_lex()
+            self.cont_line()
+            self.c = self.get_c()
+            self.create_token(Enum.Tvirgula)
+            response = True
+        else:
+            response = False
+        return response
+
     def is_op_arithmetic(self):
         if self.c == '+':
             self.push_lex()
@@ -134,7 +175,7 @@ class Scanner(object):
             else:
                 self.push_lex()
                 self.cont_line()
-                self.print_error("Operador Relacional Diferenca mal formado.")
+                self.print_error("Operador Relacional Diferente mal formado.")
                 sys.exit()
             response = True
         else:
@@ -234,6 +275,8 @@ class Scanner(object):
                 else:
                     return self.create_token(Enum.Tid)
             elif self.is_op_relational(): # Relational Operator
+                return self.token
+            elif self.is_special():
                 return self.token
             self.cont_line()
             self.c = self.get_c()
