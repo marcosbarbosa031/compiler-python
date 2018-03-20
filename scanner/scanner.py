@@ -21,7 +21,7 @@ class Scanner(object):
     def create_token(self, code):
         self.token['code'] = code
         return self.token
-    
+
     def push_lex(self):
         self.token['lex'] = self.token['lex'][:self.lexqtd] + self.c
         self.lexqtd += 1
@@ -33,7 +33,7 @@ class Scanner(object):
             response = False
         return response
 
-    def cont_line (self):
+    def cont_line(self):
         if self.c == '\n' or self.c == '\r':
             self.token['cl'] = 1
             self.token['ln'] += 1
@@ -50,8 +50,9 @@ class Scanner(object):
         return response
 
     def print_error(self, msg):
-        print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: {3}".format(self.token['ln'], self.token['cl'], self.token['lex'], msg))
-        sys,exit()
+        print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: {3}".format(self.token['ln'], self.token['cl'],
+                                                                                 self.token['lex'], msg))
+        sys, exit()
 
     def is_special(self):
         if self.c == '(':
@@ -94,6 +95,40 @@ class Scanner(object):
             response = False
         return response
 
+    @property
+    def comment(self):
+        flag = True
+        if self.c == '/':  # One-line Comment
+            self.cont_line()
+            self.c = self.get_c()
+            while self.c != "\n":  # Line-break
+                self.cont_line()
+                self.c = self.get_c()
+            response = True
+        elif self.c == '*':  # Multi
+            self.cont_line()
+            self.c = self.get_c()
+            while flag:
+                if self.c == '*':  # Multiline Comment
+                    self.cont_line()
+                    self.c = self.get_c()
+                    if self.c == '/':
+                        self.cont_line()
+                        self.c = self.get_c()
+                        response = True
+                        flag = False
+                    elif not self.c:  # End of File
+                        self.print_error("Comentario multilinha não fechado!")
+                    else:
+                        self.cont_line()
+                        self.c = self.get_c()
+                else:
+                    self.cont_line()
+                    self.c = self.get_c()
+        else:
+            response = False
+        return response
+
     def is_op_arithmetic(self):
         if self.c == '+':
             self.push_lex()
@@ -117,21 +152,24 @@ class Scanner(object):
             self.push_lex()
             self.cont_line()
             self.c = self.get_c()
-            self.create_token(Enum.Tdivi)
-            response = True
+            if not self.comment():  # Check if 'is Comment
+                self.create_token(Enum.Tdivi)
+                response = True
+            else:
+                response = False
         elif self.c == '=':
             self.push_lex()
             self.cont_line()
             self.c = self.get_c()
             if self.c == '=':
                 response = False
-            else:   
+            else:
                 self.create_token(Enum.Tatrib)
                 response = True
         else:
             response = False
         return response
-    
+
     def is_op_relational(self):
         if self.c == '>':
             self.push_lex()
@@ -237,8 +275,8 @@ class Scanner(object):
 
     def scan_file(self):
         self.token['lex'] = ""
-        while self.c: #Iterate the Archive
-            while self.is_blank(): # Skip the blank (not tokens)
+        while self.c:  # Iterate the Archive
+            while self.is_blank():  # Skip the blank (not tokens)
                 self.cont_line()
                 self.c = self.get_c()
             # if not self.is_valid(): # Verify if is a valid token
@@ -246,43 +284,38 @@ class Scanner(object):
             #     print("Erro: Linha: {0} Coluna: {1}\nUltimo token Lido: {2}: Token invalido".format(
             #         self.token['ln'], self.token['cl'], self.token['lex']))
             #     return None
-            if self.c.isdigit(): # Digit Int
+            if self.c.isdigit():  # Digit Int
                 self.push_lex()
                 self.cont_line()
                 self.c = self.get_c()
-                while self.c.isdigit(): # Iterate while Int
+                while self.c.isdigit():  # Iterate while Int
                     self.push_lex()
                     self.cont_line()
                     self.c = self.get_c()
-                if self.c == '.': # Float
+                if self.c == '.':  # Float
                     return self.verify_float()
                 # elif self.is_valid():
                 return self.create_token(Enum.Tdigint)
-            elif self.c == '.': # Float
+            elif self.c == '.':  # Float
                 return self.verify_float()
-            elif self.is_op_arithmetic(): # Arithmetic Operator
+            elif self.is_op_arithmetic():  # Arithmetic Operator
                 return self.token
-            elif self.c.isalpha() or self.c == '_': #identifier (Letters or _ ) Or Reserved Word
+            elif self.c.isalpha() or self.c == '_':  # identifier (Letters or _ ) Or Reserved Word
                 self.push_lex()
                 self.cont_line()
                 self.c = self.get_c()
-                while self.c.isalnum() or self.c == '_': # (Alphanumeric or _ )
+                while self.c.isalnum() or self.c == '_':  # (Alphanumeric or _ )
                     self.push_lex()
                     self.cont_line()
                     self.c = self.get_c()
-                if self.is_reserved_word(): # Verify is it's a Reserved Word
+                if self.is_reserved_word():  # Verify is it's a Reserved Word
                     return self.token
                 else:
                     return self.create_token(Enum.Tid)
-            elif self.is_op_relational(): # Relational Operator
+            elif self.is_op_relational():  # Relational Operator
                 return self.token
             elif self.is_special():
                 return self.token
             self.cont_line()
             self.c = self.get_c()
-        # print("Lexema: "+ self.token['lex'])
-        
-
-                
-
-
+            # print("Lexema: "+ self.token['lex'])

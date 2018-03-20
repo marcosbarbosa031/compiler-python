@@ -1,5 +1,5 @@
 12354 *542.04
  /.52-.58+5 main
-  if else while do 
+  //if else while do
   for int float char
    _qtd 5 == 10 < <= > >= !={),}(;
