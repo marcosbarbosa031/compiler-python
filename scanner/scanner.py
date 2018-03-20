@@ -118,7 +118,7 @@ class Scanner(object):
                         response = True
                         flag = False
                     elif not self.c:  # End of File
-                        self.print_error("Comentario multilinha não fechado!")
+                        self.print_error("Comentario multilinha nao fechado!")
                     else:
                         self.cont_line()
                         self.c = self.get_c()
@@ -129,6 +129,7 @@ class Scanner(object):
             response = False
         return response
 
+    @property
     def is_op_arithmetic(self):
         if self.c == '+':
             self.push_lex()
@@ -152,7 +153,7 @@ class Scanner(object):
             self.push_lex()
             self.cont_line()
             self.c = self.get_c()
-            if not self.comment():  # Check if 'is Comment
+            if not self.comment:  # Check if 'is Comment
                 self.create_token(Enum.Tdivi)
                 response = True
             else:
@@ -298,7 +299,7 @@ class Scanner(object):
                 return self.create_token(Enum.Tdigint)
             elif self.c == '.':  # Float
                 return self.verify_float()
-            elif self.is_op_arithmetic():  # Arithmetic Operator
+            elif self.is_op_arithmetic:  # Arithmetic Operator
                 return self.token
             elif self.c.isalpha() or self.c == '_':  # identifier (Letters or _ ) Or Reserved Word
                 self.push_lex()
