@@ -43,14 +43,15 @@ class Scanner(object):
             self.token['cl'] += 1
 
     def is_valid(self):
-        if self.c == ' ' or self.c == '\n' or self.c == '\t' or self.c == '\r' or self.c == ';' or self.c == '=' or self.c == '!' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '>' or self.c == '<' or self.c == '<=' or self.c == '>=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or not self.c or self.c.isdigit() or self.c == '.':
+        if self.is_blank() or self.c.isalpha() or self.c == '_' or self.c.isdigit() or self.c == '<' or self.c == '>' or self.c == '<=' or self.c == '>=' or self.c == '==' or self.c == '!=' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or self.c == ',' or self.c == ';' or self.is_reserved_word() or self.c == '\'' or self.c == '.':
             response = True
         else:
             response = False
         return response
 
     def print_error(self, msg):
-        print("ERRO na linha {0}, coluna {1}, ultimo token lido {2}: {3}".format(self.token['ln'], self.token['cl'],
+        self.push_lex()
+        print("ERRO na linha {0}, coluna {1}, ultimo token lido '{2}': {3}".format(self.token['ln'], self.token['cl'],
                                                                                  self.token['lex'], msg))
         sys, exit()
 
@@ -122,6 +123,8 @@ class Scanner(object):
                     else:
                         self.cont_line()
                         self.c = self.get_c()
+                elif not self.c:
+                    self.print_error("Comentario multilinha nao fechado!")
                 else:
                     self.cont_line()
                     self.c = self.get_c()
@@ -157,6 +160,7 @@ class Scanner(object):
                 self.create_token(Enum.Tdivi)
                 response = True
             else:
+                self.token['lex'] = ''
                 response = False
         elif self.c == '=':
             self.push_lex()
@@ -278,13 +282,9 @@ class Scanner(object):
         self.token['lex'] = ""
         while self.c:  # Iterate the Archive
             while self.is_blank():  # Skip the blank (not tokens)
+                # print ("entrou blank")
                 self.cont_line()
                 self.c = self.get_c()
-            # if not self.is_valid(): # Verify if is a valid token
-            #     self.push_lex()
-            #     print("Erro: Linha: {0} Coluna: {1}\nUltimo token Lido: {2}: Token invalido".format(
-            #         self.token['ln'], self.token['cl'], self.token['lex']))
-            #     return None
             if self.c.isdigit():  # Digit Int
                 self.push_lex()
                 self.cont_line()
@@ -317,6 +317,23 @@ class Scanner(object):
                 return self.token
             elif self.is_special():
                 return self.token
+            elif self.c == '\'':
+                self.push_lex()
+                self.cont_line()
+                self.c = self.get_c()
+                self.push_lex()
+                self.cont_line()
+                self.c = self.get_c()
+                if self.c != '\'':
+                    self.print_error("Caracter mal formado.")
+                else:
+                    self.push_lex()
+                    self.cont_line()
+                    self.c = self.get_c() 
+                    return self.create_token(Enum.Tdigchar)
+            elif not self.is_valid():
+                print("Lexema: {}\nCharacter: {}".format(self.token['lex'], self.c))
+                self.print_error("Token nao pertence a linguagem.")
             self.cont_line()
             self.c = self.get_c()
             # print("Lexema: "+ self.token['lex'])
