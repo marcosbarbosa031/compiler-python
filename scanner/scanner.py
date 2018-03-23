@@ -282,7 +282,6 @@ class Scanner(object):
         self.token['lex'] = ""
         while self.c:  # Iterate the Archive
             while self.is_blank():  # Skip the blank (not tokens)
-                # print ("entrou blank")
                 self.cont_line()
                 self.c = self.get_c()
             if self.c.isdigit():  # Digit Int
@@ -295,7 +294,6 @@ class Scanner(object):
                     self.c = self.get_c()
                 if self.c == '.':  # Float
                     return self.verify_float()
-                # elif self.is_valid():
                 return self.create_token(Enum.Tdigint)
             elif self.c == '.':  # Float
                 return self.verify_float()
@@ -334,6 +332,6 @@ class Scanner(object):
             elif not self.is_valid():
                 print("Lexema: {}\nCharacter: {}".format(self.token['lex'], self.c))
                 self.print_error("Token nao pertence a linguagem.")
-            self.cont_line()
-            self.c = self.get_c()
-            # print("Lexema: "+ self.token['lex'])
+            else:    
+                self.cont_line()
+                self.c = self.get_c()
