@@ -43,7 +43,7 @@ class Scanner(object):
             self.token['cl'] += 1
 
     def is_valid(self):
-        if self.is_blank() or self.c.isalpha() or self.c == '_' or self.c.isdigit() or self.c == '<' or self.c == '>' or self.c == '<=' or self.c == '>=' or self.c == '==' or self.c == '!=' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or self.c == ',' or self.c == ';' or self.is_reserved_word() or self.c == '\'' or self.c == '.':
+        if self.is_blank() or self.c.isalpha() or self.c == '_' or self.c.isdigit() or self.c == '<' or self.c == '>' or self.c == '<=' or self.c == '>=' or self.c == '==' or self.c == '!=' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or self.c == ',' or self.c == ';' or self.is_reserved_word() or self.c == '\'' or self.c == '.' or self.c == '':
             response = True
         else:
             response = False

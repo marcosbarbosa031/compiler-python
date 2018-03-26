@@ -1,5 +1,6 @@
 import sys
-from scanner.scanner import Scanner
+from scanner import Scanner
+#from parser import Parser
 from io import open
 
 args = len(sys.argv)
