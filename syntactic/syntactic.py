@@ -22,17 +22,32 @@ class Syntactic(object):
         pass
 
     def var_decl(self):
-        pass
+        if self.is_var_dec():  # <tipo>
+            self.token = self.Scanner.scan_file()
+            if self.token['code'] == Enum.Tid:  # <id>
+                self.token = self.Scanner.scan_file()
+                while self.token['code'] == Enum.Tvirgula:  # {,<id>}*
+                    self.token = self.Scanner.scan_file()
+                    if self.token['code'] == Enum.Tid:
+                        self.token = self.Scanner.scan_file()
+                    else:
+                        PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um Identificador.")
+                if self.token['code'] == Enum.Tponto_virgula:  #  ";"
+                    self.token = self.Scanner.scan_file()
+                else:
+                    PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um ';'")
+            else:
+                PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um Identificador.")
+        else:
+            PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um Tipo (Int, Float, Char)")    
 
     def block(self):
         if self.token['code'] == Enum.Tchaves_opn:  # "{"
             self.token = self.Scanner.scan_file()
             while self.is_var_dec():  # {<decl_var>}*
                 self.var_decl()
-                self.token = self.Scanner.scan_file()
             while self.is_command():  # {<comando>}*
                 self.command()
-                self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tchaves_cls:  # "}"
                 self.token = self.Scanner.scan_file()
             else:
