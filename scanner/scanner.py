@@ -51,9 +51,8 @@ class Scanner(object):
 
     def print_error(self, msg):
         self.push_lex()
-        print("ERRO na linha {0}, coluna {1}, ultimo token lido '{2}': {3}".format(self.token['ln'], self.token['cl'],
-                                                                                 self.token['lex'], msg))
-        sys, exit()
+        print("ERRO na linha {0}, coluna {1}, ultimo token lido '{2}': {3}".format(self.token['ln'], self.token['cl'], self.token['lex'], msg))
+        sys.exit(1)
 
     def is_special(self):
         if self.c == '(':
