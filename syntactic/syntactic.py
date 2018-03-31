@@ -40,7 +40,7 @@ class Syntactic(object):
         else:
             PrintErr.print_error(self.token, "Bloco mal formado. Era esperado '{'")
 
-    def program(self):
+    def programm(self):
         self.token = self.Scanner.scan_file()
         if self.token['code'] == Enum.Tint:
             self.token = self.Scanner.scan_file()

@@ -13,7 +13,7 @@ elif args == 2:
         s = Scanner(arq)
         s.c = s.get_c()
         p = Syntactic(s)
-        if p.program():
+        if p.programm():
             print("Compilado com sucesso!")
         #token = s.scan_file()
         #while token:
