@@ -16,10 +16,47 @@ class Syntactic(object):
         return response
 
     def is_command(self):
+        if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn or self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo or self.token['code'] == Enum.Tif:
+            response = True
+        else:
+            response = False
+        return response
+
+    def iteration(self):
         pass
 
-    def command(self):
+    def arit_expr(self):
         pass
+
+    def attribution(self):
+        if self.token['code'] == Enum.Tid:
+            self.token = self.Scanner.scan_file()
+            if self.token['code'] == Enum.Tigual:
+                self.token = self.Scanner.scan_file()
+                self.arit_expr()
+            else:
+                PrintErr.print_error(
+                    self.token, "Atribuição mal formada. Era esperado um '='")
+        else:
+            PrintErr.print_error(self.token, "Atribuição mal formada. Era esperado um Identificador.")
+
+    def basic_command(self):
+        if self.token['code'] == Enum.Tid:
+            self.attribution()
+        elif self.token['code'] == Enum.Tchaves_opn:
+            self.block()
+        else:
+            PrintErr.print_error(self.token, "Comando mal formado. Era esperado Atribuição ou Bloco.")
+
+    def command(self):
+        if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn:
+            self.basic_command()
+        elif self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo:
+            self.iteration()
+        elif self.token['code'] == Enum.Tif:
+            pass
+        else:
+            PrintErr.print_error(self.token, "Comando mal formado.")
 
     def var_decl(self):
         if self.is_var_dec():  # <tipo>
