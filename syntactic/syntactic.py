@@ -36,9 +36,9 @@ class Syntactic(object):
                 self.arit_expr()
             else:
                 PrintErr.print_error(
-                    self.token, "Atribuição mal formada. Era esperado um '='")
+                    self.token, "Atribuicao mal formada. Era esperado um '='")
         else:
-            PrintErr.print_error(self.token, "Atribuição mal formada. Era esperado um Identificador.")
+            PrintErr.print_error(self.token, "Atribuicao mal formada. Era esperado um Identificador.")
 
     def basic_command(self):
         if self.token['code'] == Enum.Tid:
@@ -46,7 +46,7 @@ class Syntactic(object):
         elif self.token['code'] == Enum.Tchaves_opn:
             self.block()
         else:
-            PrintErr.print_error(self.token, "Comando mal formado. Era esperado Atribuição ou Bloco.")
+            PrintErr.print_error(self.token, "Comando mal formado. Era esperado Atribuicao ou Bloco.")
 
     def command(self):
         if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn:
