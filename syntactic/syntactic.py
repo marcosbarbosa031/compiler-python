@@ -23,53 +23,111 @@ class Syntactic(object):
         return response
 
     def iteration(self):
-        pass
-
-    def arit_expr(self):
-        pass
-
-    def attribution(self):
-        if self.token['code'] == Enum.Tid:
+        if self.token['code'] == Enum.Twhile:                                           # while
             self.token = self.Scanner.scan_file()
-            if self.token['code'] == Enum.Tigual:
+            if self.token['code'] == Enum.Tparenteses_opn:                              # "("
                 self.token = self.Scanner.scan_file()
-                self.arit_expr()
+                self.rel_expr()                                                         # <expr_relacional>
+                if self.token['code'] == Enum.Tparenteses_cls:                          # ")"
+                    self.token = self.Scanner.scan_file()
+                    self.command()                                                      # <comando>
+                else:
+                    PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ')'")
+            else:
+                PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: '('")
+        elif self.token['code'] == Enum.Tdo:                                            # do
+            self.token = self.Scanner.scan_file()
+            self.command()                                                              # <comando>
+            if self.token['code'] == Enum.Twhile:                                       # while
+                self.token = self.Scanner.scan_file()
+                if self.token['code'] == Enum.Tparenteses_opn:                          # "("
+                    self.token = self.Scanner.scan_file()
+                    self.rel_expr()                                                     # <expr_relacional>
+                    if self.token['code'] == Enum.Tparenteses_cls:                      # ")" 
+                        self.token = self.Scanner.scan_file()
+                        if self.token['code'] == Enum.Tponto_virgula:                   # ";"
+                            self.token = self.Scanner.scan_file()
+                        else:
+                            PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ';'")
+                    else:
+                        PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ')'")
+                else:
+                    PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: '('")
+            else:
+                PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: 'while'")
+        else:
+            PrintErr.print_error(self.token, "Iteracao mal formada.")
+
+    def arit_expr(self.):
+        if self.token['code'] == Enum.Tsoma or self.token['code'] == Enum.Tsub:         # "+"  | "-" 
+            self.token = self.Scanner.scan_file()
+            self.term()                                                                 # <T>
+            self.arit_expr()                                                            # <E'>
+
+    def expr(self):
+        self.term()                                                                     # <T>
+        self.arit_expr()                                                                # <E'>
+
+    def attribution(self):      #OK
+        if self.token['code'] == Enum.Tid:                                              # <id>
+            self.token = self.Scanner.scan_file()
+            if self.token['code'] == Enum.Tigual:                                       # "="
+                self.token = self.Scanner.scan_file()
+                self.expr()                                                             # <expr_arit>
+                if self.token['code'] == Enum.Tponto_virgula:                           # ";"
+                    self.token = self.Scanner.scan_file()
+                else:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. Era esperado: ';'")
             else:
                 PrintErr.print_error(
-                    self.token, "Atribuicao mal formada. Era esperado um '='")
+                    self.token, "Atribuicao mal formada. Era esperado: '='")
         else:
-            PrintErr.print_error(self.token, "Atribuicao mal formada. Era esperado um Identificador.")
+            PrintErr.print_error(self.token, "Atribuicao mal formada. Era esperado: Identificador.")
 
-    def basic_command(self):
-        if self.token['code'] == Enum.Tid:
+    def basic_command(self):    #OK
+        if self.token['code'] == Enum.Tid:                                              # <atribuicao>
             self.attribution()
-        elif self.token['code'] == Enum.Tchaves_opn:
+        elif self.token['code'] == Enum.Tchaves_opn:                                    # <bloco>
             self.block()
         else:
-            PrintErr.print_error(self.token, "Comando mal formado. Era esperado Atribuicao ou Bloco.")
+            PrintErr.print_error(self.token, "Comando mal formado. Era esperado: Atribuicao ou Bloco.")
 
-    def command(self):
-        if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn:
+    def command(self):          #OK
+        if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn:    # <comando_basico>
             self.basic_command()
-        elif self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo:
+        elif self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo:       # <iteracao>
             self.iteration()
-        elif self.token['code'] == Enum.Tif:
-            pass
+        elif self.token['code'] == Enum.Tif:                                            # if                   
+            self.token = self.Scanner.scan_file()
+            if self.token['code'] == Enum.Tparenteses_opn:                              # "("
+                self.token = self.Scanner.scan_file()
+                self.rel_expr()                                                         # <expr_relacional>
+                if self.token['code'] == Enum.Tparenteses_cls:                          # ")" 
+                    self.token = self.Scanner.scan_file()
+                    self.command()                                                      # <comando>
+                    if self.token['code'] == Enum.Telse:                                # {else <comando>}?
+                        self.token = self.Scanner.scan_file()
+                        self.comando()
+                    self.token = self.Scanner.scan_file()
+                else:
+                    PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")
+            else:
+                PrintErr.print_error(self.token, "Comando mal formada. Era esperado: '('")
         else:
             PrintErr.print_error(self.token, "Comando mal formado.")
 
-    def var_decl(self):
-        if self.is_var_dec():  # <tipo>
+    def var_decl(self):         #OK
+        if self.is_var_dec():                                                           # <tipo>
             self.token = self.Scanner.scan_file()
-            if self.token['code'] == Enum.Tid:  # <id>
+            if self.token['code'] == Enum.Tid:                                          # <id>
                 self.token = self.Scanner.scan_file()
-                while self.token['code'] == Enum.Tvirgula:  # {,<id>}*
+                while self.token['code'] == Enum.Tvirgula:                              # {,<id>}*
                     self.token = self.Scanner.scan_file()
                     if self.token['code'] == Enum.Tid:
                         self.token = self.Scanner.scan_file()
                     else:
                         PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um Identificador.")
-                if self.token['code'] == Enum.Tponto_virgula:  #  ";"
+                if self.token['code'] == Enum.Tponto_virgula:                           #  ";"
                     self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um ';'")
@@ -78,31 +136,31 @@ class Syntactic(object):
         else:
             PrintErr.print_error(self.token, "Declaracao de variavel mal formada. era esperado um Tipo (Int, Float, Char)")    
 
-    def block(self):
-        if self.token['code'] == Enum.Tchaves_opn:  # "{"
+    def block(self):            #OK
+        if self.token['code'] == Enum.Tchaves_opn:                                      # "{"
             self.token = self.Scanner.scan_file()
-            while self.is_var_dec():  # {<decl_var>}*
+            while self.is_var_dec():                                                    # {<decl_var>}*
                 self.var_decl()
-            while self.is_command():  # {<comando>}*
+            while self.is_command():                                                    # {<comando>}*
                 self.command()
-            if self.token['code'] == Enum.Tchaves_cls:  # "}"
+            if self.token['code'] == Enum.Tchaves_cls:                                  # "}"
                 self.token = self.Scanner.scan_file()
             else:
                 PrintErr.print_error(self.token, "Bloco mal formado. Era esperado '}'")
         else:
             PrintErr.print_error(self.token, "Bloco mal formado. Era esperado '{'")
 
-    def programm(self):
+    def programm(self):         #OK
         self.token = self.Scanner.scan_file()
-        if self.token['code'] == Enum.Tint:
+        if self.token['code'] == Enum.Tint:                                             # int
             self.token = self.Scanner.scan_file()
-            if self.token['code'] == Enum.Tmain:
+            if self.token['code'] == Enum.Tmain:                                        # main
                 self.token = self.Scanner.scan_file()
-                if self.token['code'] == Enum.Tparenteses_opn:
+                if self.token['code'] == Enum.Tparenteses_opn:                          # "("
                     self.token = self.Scanner.scan_file()
-                    if self.token['code'] == Enum.Tparenteses_cls:
+                    if self.token['code'] == Enum.Tparenteses_cls:                      # ")"
                         self.token = self.Scanner.scan_file()
-                        self.block()
+                        self.block()                                                    # <bloco>
                         return True
                     else:
                         PrintErr.print_error(self.token, "Programa mal formado. Era esperado )")
