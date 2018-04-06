@@ -95,7 +95,7 @@ class Syntactic(object):
         self.expr()
         if self.token['code'] == Enum.Tigual or self.token['code'] == Enum.Tdiferente or self.token['code'] == Enum.Tmaior or self.token['code'] == Enum.Tmenor or self.token['code'] == Enum.Tmaior_igual or self.token['code'] == Enum.Tmenor_igual:
             self.token = self.Scanner.scan_file()
-            self.expr()
+            self.expr()#*
         else:
             PrintErr.print_error(self.token, "Expressao mal formada. Era esperado: Operador Relacional.")
 
@@ -119,13 +119,13 @@ class Syntactic(object):
         if self.token['code'] == Enum.Tid:                                              # <atribuicao>
             self.attribution()
         elif self.token['code'] == Enum.Tchaves_opn:                                    # <bloco>
-            self.block()
+            self.block()#*
         else:
             PrintErr.print_error(self.token, "Comando mal formado. Era esperado: Atribuicao ou Bloco.")
 
     def command(self):          #OK
         if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tchaves_opn:    # <comando_basico>
-            self.basic_command()
+            self.basic_command()#*
         elif self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo:       # <iteracao>
             self.iteration()
         elif self.token['code'] == Enum.Tif:                                            # if
@@ -138,8 +138,8 @@ class Syntactic(object):
                     self.command()                                                      # <comando>
                     if self.token['code'] == Enum.Telse:                                # {else <comando>}?
                         self.token = self.Scanner.scan_file()
-                        self.command()
-                    self.token = self.Scanner.scan_file()
+                        self.command()#*
+                    # self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")
             else:
@@ -173,7 +173,7 @@ class Syntactic(object):
             while self.is_var_dec():                                                    # {<decl_var>}*
                 self.var_decl()
             while self.is_command():                                                    # {<comando>}*
-                self.command()
+                self.command()#*
             if self.token['code'] == Enum.Tchaves_cls:                                  # "}"
                 self.token = self.Scanner.scan_file()
             else:
@@ -191,7 +191,7 @@ class Syntactic(object):
                     self.token = self.Scanner.scan_file()
                     if self.token['code'] == Enum.Tparenteses_cls:                      # ")"
                         self.token = self.Scanner.scan_file()
-                        self.block()                                                    # <bloco>
+                        self.block() #*                                                   # <bloco>
                         return True
                     else:
                         PrintErr.print_error(self.token, "Programa mal formado. Era esperado )")

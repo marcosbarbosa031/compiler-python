@@ -1,5 +1,10 @@
-12354 *542.04
- /.52-.58+5 main
- //git if else while do
-for int 5/*float* /**char*/
-   _qtd 5 == 10 < <= > >= !={),}(;'x'
+int main () {
+    int x;
+
+    if (w != x) 
+    {
+
+        p = 10;
+    }else
+        p = '1';
+}
