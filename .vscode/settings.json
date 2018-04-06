@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "C:\\Users\\Marcos\\AppData\\Local\\Programs\\Python\\Python36-32\\python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.formatting.provider": "yapf"
+}

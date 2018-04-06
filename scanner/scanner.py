@@ -43,7 +43,7 @@ class Scanner(object):
             self.token['cl'] += 1
 
     def is_valid(self):
-        if self.is_blank() or self.c.isalpha() or self.c == '_' or self.c.isdigit() or self.c == '<' or self.c == '>' or self.c == '<=' or self.c == '>=' or self.c == '==' or self.c == '!=' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or self.c == ',' or self.c == ';' or self.is_reserved_word() or self.c == '\'' or self.c == '.':
+        if self.is_blank() or self.c.isalpha() or self.c == '_' or self.c.isdigit() or self.c == '<' or self.c == '>' or self.c == '<=' or self.c == '>=' or self.c == '==' or self.c == '!=' or self.c == '+' or self.c == '-' or self.c == '*' or self.c == '/' or self.c == '=' or self.c == '(' or self.c == ')' or self.c == '{' or self.c == '}' or self.c == ',' or self.c == ';' or self.is_reserved_word() or self.c == '\'' or self.c == '.' or self.c == '':
             response = True
         else:
             response = False
@@ -51,9 +51,8 @@ class Scanner(object):
 
     def print_error(self, msg):
         self.push_lex()
-        print("ERRO na linha {0}, coluna {1}, ultimo token lido '{2}': {3}".format(self.token['ln'], self.token['cl'],
-                                                                                 self.token['lex'], msg))
-        sys, exit()
+        print("ERRO na linha {0}, coluna {1}, ultimo token lido '{2}': {3}".format(self.token['ln'], self.token['cl'], self.token['lex'], msg))
+        sys.exit(1)
 
     def is_special(self):
         if self.c == '(':
@@ -335,3 +334,4 @@ class Scanner(object):
             else:    
                 self.cont_line()
                 self.c = self.get_c()
+        return self.create_token(Enum.Tfeof)

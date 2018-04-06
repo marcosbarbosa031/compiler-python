@@ -1,5 +1,6 @@
 import sys
-from scanner.scanner import Scanner
+from syntactic import Syntactic
+from scanner import Scanner
 from io import open
 
 args = len(sys.argv)
@@ -11,11 +12,14 @@ elif args == 2:
     with open(filename, 'r') as arq:
         s = Scanner(arq)
         s.c = s.get_c()
-        token = s.scan_file()
-        while token:
-            print ("Lexema: "+token['lex'])
-            print ("token: "+ str(token['code']))
-            print ('')
-            token = s.scan_file()
+        p = Syntactic(s)
+        if p.programm():
+            print("Compilado com sucesso!")
+        #token = s.scan_file()
+        #while token:
+        #    print ("Lexema: "+token['lex'])
+        #    print ("token: "+ str(token['code']))
+        #    print ('')
+        #    token = s.scan_file()
 else:
     print ("Argumentos invalidos. Insira apenas o caminho do arquivo a ser aberto")
