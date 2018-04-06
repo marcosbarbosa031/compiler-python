@@ -334,3 +334,4 @@ class Scanner(object):
             else:    
                 self.cont_line()
                 self.c = self.get_c()
+        return self.create_token(Enum.Tfeof)

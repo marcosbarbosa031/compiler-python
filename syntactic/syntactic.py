@@ -58,7 +58,30 @@ class Syntactic(object):
         else:
             PrintErr.print_error(self.token, "Iteracao mal formada.")
 
-    def arit_expr(self.):
+    def factor(self):
+        if self.token['code'] == Enum.Tid or self.token['code'] == Enum.Tdigint or self.token['code'] == Enum.Tdigfloat or self.token['code'] == Enum.Tdigchar:
+            self.token = self.Scanner.scan_file()
+        elif self.token['code'] == Enum.Tparenteses_opn:
+            self.token = self.Scanner.scan_file()
+            self.expr()
+            if self.token['code'] == Enum.Tparenteses_cls:
+                self.token = self.Scanner.scan_file()
+            else:
+                PrintErr.print_error(self.token, "Fator mal formado. Era esperado: ')'")
+        else:
+            PrintErr.print_error(self.token, "Fator mal formado. Era esperado: Identificador, numero inteiro, real ou caracter")
+
+    def arit_term(self):
+        if self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:        # "*"  | "/"
+            self.token = self.Scanner.scan_file()
+            self.factor()
+            self.arit_term()
+
+    def term(self):
+        self.factor()                                                                   # <F>
+        self.arit_term()                                                                # <T'>
+
+    def arit_expr(self):
         if self.token['code'] == Enum.Tsoma or self.token['code'] == Enum.Tsub:         # "+"  | "-" 
             self.token = self.Scanner.scan_file()
             self.term()                                                                 # <T>
@@ -68,10 +91,18 @@ class Syntactic(object):
         self.term()                                                                     # <T>
         self.arit_expr()                                                                # <E'>
 
+    def rel_expr(self):
+        self.expr()
+        if self.token['code'] == Enum.Tigual or self.token['code'] == Enum.Tdiferente or self.token['code'] == Enum.Tmaior or self.token['code'] == Enum.Tmenor or self.token['code'] == Enum.Tmaior_igual or self.token['code'] == Enum.Tmenor_igual:
+            self.token = self.Scanner.scan_file()
+            self.expr()
+        else:
+            PrintErr.print_error(self.token, "Expressao mal formada. Era esperado: Operador Relacional.")
+
     def attribution(self):      #OK
         if self.token['code'] == Enum.Tid:                                              # <id>
             self.token = self.Scanner.scan_file()
-            if self.token['code'] == Enum.Tigual:                                       # "="
+            if self.token['code'] == Enum.Tatrib:                                       # "="
                 self.token = self.Scanner.scan_file()
                 self.expr()                                                             # <expr_arit>
                 if self.token['code'] == Enum.Tponto_virgula:                           # ";"
@@ -97,7 +128,7 @@ class Syntactic(object):
             self.basic_command()
         elif self.token['code'] == Enum.Twhile or self.token['code'] == Enum.Tdo:       # <iteracao>
             self.iteration()
-        elif self.token['code'] == Enum.Tif:                                            # if                   
+        elif self.token['code'] == Enum.Tif:                                            # if
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tparenteses_opn:                              # "("
                 self.token = self.Scanner.scan_file()
@@ -107,7 +138,7 @@ class Syntactic(object):
                     self.command()                                                      # <comando>
                     if self.token['code'] == Enum.Telse:                                # {else <comando>}?
                         self.token = self.Scanner.scan_file()
-                        self.comando()
+                        self.command()
                     self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")
