@@ -201,3 +201,4 @@ class Syntactic(object):
                 PrintErr.print_error(self.token, "Programa mal formado. Era esperado a palavra reservada 'main'")
         else:
             PrintErr.print_error(self.token, "Programa mal formado. Era esperado a palavra reservada 'int'")
+
