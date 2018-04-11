@@ -139,7 +139,7 @@ class Syntactic(object):
                     if self.token['code'] == Enum.Telse:                                # {else <comando>}?
                         self.token = self.Scanner.scan_file()
                         self.command()
-                    self.token = self.Scanner.scan_file()
+                    # self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")
             else:
