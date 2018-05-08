@@ -192,7 +192,10 @@ class Syntactic(object):
                     if self.token['code'] == Enum.Tparenteses_cls:                      # ")"
                         self.token = self.Scanner.scan_file()
                         self.block() #*                                                   # <bloco>
-                        return True
+                        if self.token['code'] == Enum.Tfeof:
+                            return True
+                        else:
+                            PrintErr.print_error(self.token, "Programa mal formado. Era esperado Fim de arquivo apos termino do metodo main )")
                     else:
                         PrintErr.print_error(self.token, "Programa mal formado. Era esperado )")
                 else:

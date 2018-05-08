@@ -2,17 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a3f2853-2677-48c9-853b-e77ddfd4ae63" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" afterPath="$PROJECT_DIR$/.vscode/settings.json" />
       <change beforePath="$PROJECT_DIR$/exemplo.txt" afterPath="$PROJECT_DIR$/exemplo.txt" />
-      <change beforePath="$PROJECT_DIR$/scanner/__init__.py" afterPath="$PROJECT_DIR$/scanner/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/syntactic/__init__.py" afterPath="$PROJECT_DIR$/syntactic/__init__.py" />
       <change beforePath="$PROJECT_DIR$/syntactic/syntactic.py" afterPath="$PROJECT_DIR$/syntactic/syntactic.py" />
-      <change beforePath="$PROJECT_DIR$/utils/__init__.py" afterPath="$PROJECT_DIR$/utils/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/utils/enum/__init__.py" afterPath="$PROJECT_DIR$/utils/enum/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/utils/print_err/__init__.py" afterPath="$PROJECT_DIR$/utils/print_err/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/utils/print_err/print_err.py" afterPath="$PROJECT_DIR$/utils/print_err/print_err.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -58,8 +50,8 @@
           <file leaf-file-name="scanner.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/scanner/scanner.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1976">
-                  <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+                <state relative-caret-position="460">
+                  <caret line="331" column="43" lean-forward="false" selection-start-line="331" selection-start-column="39" selection-end-line="331" selection-end-column="43" />
                   <folding>
                     <element signature="e#0#22#0" expanded="true" />
                   </folding>
@@ -70,8 +62,8 @@
           <file leaf-file-name="syntactic.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/syntactic/syntactic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="68">
-                  <caret line="5" column="16" lean-forward="true" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+                <state relative-caret-position="387">
+                  <caret line="197" column="139" lean-forward="false" selection-start-line="197" selection-start-column="139" selection-end-line="197" selection-end-column="139" />
                   <folding />
                 </state>
               </provider>
@@ -104,8 +96,8 @@
           <file leaf-file-name="exemplo.txt" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/exemplo.txt">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="374">
-                  <caret line="22" column="10" lean-forward="true" selection-start-line="22" selection-start-column="10" selection-end-line="22" selection-end-column="10" />
+                <state relative-caret-position="543">
+                  <caret line="38" column="1" lean-forward="false" selection-start-line="38" selection-start-column="1" selection-end-line="38" selection-end-column="1" />
                   <folding />
                 </state>
               </provider>
@@ -127,6 +119,7 @@
       <find>difere</find>
       <find>property</find>
       <find>print_error</find>
+      <find>feof</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -147,8 +140,8 @@
         <option value="$PROJECT_DIR$/parser/__init__.py" />
         <option value="$PROJECT_DIR$/run.py" />
         <option value="$PROJECT_DIR$/scanner/scanner.py" />
-        <option value="$PROJECT_DIR$/exemplo.txt" />
         <option value="$PROJECT_DIR$/syntactic/syntactic.py" />
+        <option value="$PROJECT_DIR$/exemplo.txt" />
       </list>
     </option>
   </component>
@@ -189,6 +182,11 @@
               <item name="compiler-python" type="b2602c69:ProjectViewProjectNode" />
               <item name="compiler-python" type="462c0819:PsiDirectoryNode" />
               <item name="syntactic" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="compiler-python" type="b2602c69:ProjectViewProjectNode" />
+              <item name="compiler-python" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -635,18 +633,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/exemplo.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="10" lean-forward="true" selection-start-line="22" selection-start-column="10" selection-end-line="22" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scanner/scanner.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1976">
-          <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        <state relative-caret-position="460">
+          <caret line="331" column="43" lean-forward="false" selection-start-line="331" selection-start-column="39" selection-end-line="331" selection-end-column="43" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>
@@ -655,8 +645,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/syntactic/syntactic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="5" column="16" lean-forward="true" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+        <state relative-caret-position="387">
+          <caret line="197" column="139" lean-forward="false" selection-start-line="197" selection-start-column="139" selection-end-line="197" selection-end-column="139" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/exemplo.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="543">
+          <caret line="38" column="1" lean-forward="false" selection-start-line="38" selection-start-column="1" selection-end-line="38" selection-end-column="1" />
           <folding />
         </state>
       </provider>
