@@ -1,2 +1,2 @@
-from enum import Enum
-from print_err import PrintErr
+from .enum import Enum
+from .print_err import PrintErr

@@ -1,1 +1,2 @@
-from syntactic import Syntactic
+from .syntactic import Syntactic
+

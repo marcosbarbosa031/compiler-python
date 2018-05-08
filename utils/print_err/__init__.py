@@ -1,1 +1,1 @@
-from print_err import PrintErr
+from .print_err import PrintErr
