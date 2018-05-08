@@ -117,12 +117,7 @@ class Scanner(object):
                         self.c = self.get_c()
                         response = True
                         flag = False
-                    elif not self.c:  # End of File
-                        self.print_error("Comentario multilinha nao fechado!")
-                    else:
-                        self.cont_line()
-                        self.c = self.get_c()
-                elif not self.c:
+                elif not self.c: # End of File
                     self.print_error("Comentario multilinha nao fechado!")
                 else:
                     self.cont_line()
