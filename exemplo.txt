@@ -24,7 +24,7 @@ int main() {
     
     while (x>w*8) {
        float y,a;
-        w = w +1;
+        w = w + 1;
         y = x;
     }
 
@@ -36,8 +36,4 @@ int main() {
         p = 10;
     }else
         p = '1';
-}
-
-while (x < y) {
-    
 }
