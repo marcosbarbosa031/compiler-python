@@ -37,3 +37,7 @@ int main() {
     }else
         p = '1';
 }
+
+while (x < y) {
+    
+}

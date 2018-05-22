@@ -1,5 +1,6 @@
 from utils import Enum
 from utils import PrintErr
+from utils import SymbolTable
 
 
 class Syntactic(object):
@@ -195,7 +196,7 @@ class Syntactic(object):
                         if self.token['code'] == Enum.Tfeof:
                             return True
                         else:
-                            PrintErr.print_error(self.token, "Programa mal formado. Era esperado Fim de arquivo apos termino do metodo main )")
+                            PrintErr.print_error(self.token, "Programa mal formado. Era esperado Fim de arquivo apos termino do metodo main.")
                     else:
                         PrintErr.print_error(self.token, "Programa mal formado. Era esperado )")
                 else:
