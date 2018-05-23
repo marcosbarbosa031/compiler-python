@@ -1,29 +1,36 @@
 from utils import Stack
-from utils import SymbolTable
+# from utils import SymbolTable
 
 s = Stack()
-t = SymbolTable("8.25", "float", 0)
-
+print('isEmpty:')
 if(s.isEmpty()):
-  print('vazio')
+  print('true')
+else:
+  print('false')
 
 
-s.push(t)
+s.push("8.25", "float", 0)
 
-t = SymbolTable("5", "int", 0)
 
-s.push(t)
+s.push("5", "int", 0)
 
-t = SymbolTable("a", "char", 1)
 
-s.push(t)
+s.push("a", "char", 1)
 
-print('antes')
+print('Push 3 itens:')
 s.printTable()
 
+print('top:')
+
+s.top().getTable()
+
 s.removeScope(0)
-# s.clearTable()
 
-print('depois')
+print('removeScope(0):')
 
+s.printTable()
+
+s.clearTable()
+
+print('clearTable:')
 s.printTable()

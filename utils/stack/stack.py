@@ -1,45 +1,47 @@
+from ..symbol_table import SymbolTable
 
 class Stack(object):
-    table = []
-
+    stack = []
+    
     def __init__ (self):
         pass
     
-    def push (self, data):
-        self.table.append(data)
+    def push (self, lex, tipo, scope):
+        self.table = SymbolTable(lex, tipo, scope)
+        self.stack.append(self.table)
     
     def pop (self):
-        return self.table.pop()
+        return self.stack.pop()
 
     def printTable (self):
-        for t in self.table:
+        for t in self.stack:
             t.getTable()
     
     def top (self):
-        return self.table[-1]
+        return self.stack[-1]
 
-    def searchScope(self, symbolT):
-        for t in self.table:
-            if (t.scope == symbolT.scope and t.lex == symbolT.lex):
-                return True
+    def searchScope(self, lex, scope):
+        for t in self.stack:
+            if (t.scope == scope and t.lex == lex):
+                return t
         return False
     
-    def serchAll (self, symbolT):
-        for t in self.table:
-            if (t.lex == symbolT.lex):
-                return True
+    def serchAll (self, lex):
+        for t in self.stack:
+            if (t.lex == lex):
+                return t
         return False
     
     def isEmpty (self):
-        if not self.table:
+        if not self.stack:
             return True
         return False
     
     def removeScope (self, scope):
-        self.table = [t for t in self.table if t.scope != scope]
+        self.stack = [s for s in self.stack if s.scope != scope]
         # return self.table
 
     def clearTable (self):
-        del self.table[:]
+        del self.stack[:]
 
     pass
