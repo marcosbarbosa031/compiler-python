@@ -1,5 +1,5 @@
-from utils import Enum
-from utils import PrintErr
+from enum import Enum
+from print_err import PrintErr
 
 
 class Syntactic(object):
