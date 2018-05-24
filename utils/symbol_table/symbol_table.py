@@ -1,10 +1,9 @@
-
 class SymbolTable(object):
     def __init__(self, lex, tipo, scope):
         self.lex = lex
         self.tipo = tipo
         self.scope = scope
-    
+
     def getLex(self):
         return self.lex
 
@@ -13,7 +12,7 @@ class SymbolTable(object):
 
     def getScope(self):
         return self.scope
-    
+
     def getTable(self):
         print('{')
         print(' lex: '+ str(self.lex))

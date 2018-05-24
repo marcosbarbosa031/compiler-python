@@ -61,9 +61,16 @@ class Syntactic(object):
             PrintErr.print_error(self.token, "Iteracao mal formada.")
 
     def factor(self):
+        # print('token do factor: ' + self.token['lex'] + '  ' + str(self.token['code']))
         if self.token['code'] == Enum.Tdigint or self.token['code'] == Enum.Tdigfloat or self.token['code'] == Enum.Tdigchar:
+            # print('factor: '+ self.token['lex']+'  '+str(self.token['code']))
+            op = {
+                'code': self.token['code'],
+                'lex': self.token['lex']
+            }
+            # print('op: '+str(op))
             self.token = self.Scanner.scan_file()
-            return self.token
+            return op
         elif self.token['code'] == Enum.Tid:
             op = self.Stack.searchAll(self.token['lex'])
             if not op: # Variavel nao declarada
@@ -90,20 +97,25 @@ class Syntactic(object):
 
     def term(self):
         op1 = self.factor()                                                                   # <F>
-        while self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:
-            op2 = self.factor()
-            if op2['code'] == Enum.Tdigint or op2['code'] == Enum.Tdigfloat or op2['code'] == Enum.Tdigchar:
-                if op1['code'] == Enum.Tdigchar and op2['code'] != Enum.Tdigchar:
-                    PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Char so podem ser operadas com variaveis do tipo Char.")
-                if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigchar:
-                    PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
-                if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
-                    PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
-                if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
-                    op1['code'] = Enum.Tdigfloat
-                if self.token['lex'] == Enum.Tdivi and op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigint:
-                    op1['code'] = enum.Tdigfloat
-        self.token = self.Scanner.scan_file()
+        # print("op1: " + str(op1))
+        # print("token term: "+self.token['lex']+"  "+str(self.token['code']))
+        if self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:              # "*"  | "/"
+            # self.token = self.Scanner.scan_file()
+            while self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:
+                self.token = self.Scanner.scan_file()
+                op2 = self.factor()
+                # print("op2: " + op2['lex'] + "  tipo: " + str(op2['code']))
+                if op2['code'] == Enum.Tdigint or op2['code'] == Enum.Tdigfloat or op2['code'] == Enum.Tdigchar:
+                    if op1['code'] == Enum.Tdigchar and op2['code'] != Enum.Tdigchar:
+                        PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Char so podem ser operadas com variaveis do tipo Char.")
+                    if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigchar:
+                        PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
+                    if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
+                        PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
+                    if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
+                        op1['code'] = Enum.Tdigfloat
+                    if self.token['lex'] == Enum.Tdivi and op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigint:
+                        op1['code'] = enum.Tdigfloat
         return op1
 
     def arit_expr(self):
@@ -111,6 +123,8 @@ class Syntactic(object):
             self.token = self.Scanner.scan_file()
             op1 = self.term()                                                                 # <T>
             op2 = self.arit_expr()                                                            # <E'>
+            if not op2:
+                return op1
             if op2['code'] == Enum.Tdigint or op2['code'] == Enum.Tdigfloat or op2['code'] == Enum.Tdigchar:
                 if op1['code'] == Enum.Tdigchar and op2['code'] != Enum.Tdigchar:
                     PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Char so podem ser operadas com variaveis do tipo Char.")
@@ -125,6 +139,9 @@ class Syntactic(object):
     def expr(self):
         op1 = self.term()                                                                     # <T>
         op2 = self.arit_expr()                                                                # <E'>
+        # self.Stack.printTable()
+        if not op2:
+            return op1
         if op2['code'] == Enum.Tdigint or op2['code'] == Enum.Tdigfloat or op2['code'] == Enum.Tdigchar:
             if op1['code'] == Enum.Tdigchar and op2['code'] != Enum.Tdigchar:
                 PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Char so podem ser operadas com variaveis do tipo Char.")
@@ -155,13 +172,28 @@ class Syntactic(object):
 
     def attribution(self):      #OK
         if self.token['code'] == Enum.Tid:                                              # <id>
+            op1 = self.Stack.searchAll(self.token['lex'])
+            if not op1:
+                PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+self.token['lex']+"' nao foi declarada.")
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tatrib:                                       # "="
                 self.token = self.Scanner.scan_file()
-                op = self.expr()                                                        # <expr_arit>
+                op2 = self.expr()                                                        # <expr_arit>
+                # print('op1: '+op1.lex+'  tipo: '+str(op1.tipo))
+                # print('op2: '+op2['lex']+'  tipo: '+str(op2['code']))
+                if op1.tipo == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Float nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Int.")
+                if op1.tipo == Enum.Tdigint and op2['code'] == Enum.Tdigchar:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Char nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Int.")
+                if op1.tipo == Enum.Tdigchar and op2['code'] == Enum.Tdigint:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Int nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Char.")
+                if op1.tipo == Enum.Tdigchar and op2['code'] == Enum.Tdigfloat:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Float nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Char.")
+                if op1.tipo == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
+                    PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Char nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Float.")
                 if self.token['code'] == Enum.Tponto_virgula:                           # ";"
                     self.token = self.Scanner.scan_file()
-                    return op
+                    return op2
                 else:
                     PrintErr.print_error(self.token, "Atribuicao mal formada. Era esperado: ';'")
             else:
@@ -204,18 +236,27 @@ class Syntactic(object):
 
     def var_decl(self):         #OK
         if self.is_var_dec():                                                           # <tipo>
-            tipo = self.token['code']
+            if self.token['code'] == Enum.Tint:
+                tipo = Enum.Tdigint
+            elif self.token['code'] == Enum.Tfloat:
+                tipo = Enum.Tdigfloat
+            elif self.token['code'] == Enum.Tchar:
+                tipo = Enum.Tdigchar
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tid:                                          # <id>
-                if not self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
-                    self.Stack.push(self.token['lex'], tipo, self.token) # empilha na tabela de simbolos
+                if self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
+                    PrintErr.print_error(self.token, "Declaracao de variavel mal formada. A variavel '"+self.token['lex']+"' ja foi declarada.")
+                else:
+                    # print('lex: '+self.token['lex']+' tipo: '+str(tipo)+'  escopo: '+str(self.scope))
+                    self.Stack.push(self.token['lex'], tipo, self.scope) # empilha na tabela de simbolos
                 self.token = self.Scanner.scan_file()
                 while self.token['code'] == Enum.Tvirgula:                              # {,<id>}
-                    if not self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
-                        self.Stack.push(
-                            self.token['lex'], tipo,
-                            self.token)  # empilha na tabela de simbolos
                     self.token = self.Scanner.scan_file()
+                    # print('lex: ' + self.token['lex'] + ' tipo: ' + str(tipo) + '  escopo: ' + str(self.scope))
+                    if self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
+                        PrintErr.print_error(self.token, "Declaracao de variavel mal formada. A variavel '"+self.token['lex']+"' ja foi declarada.")
+                    else:
+                        self.Stack.push(self.token['lex'], tipo, self.scope)  # empilha na tabela de simbolos
                     if self.token['code'] == Enum.Tid:
                         self.token = self.Scanner.scan_file()
                     else:
