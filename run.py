@@ -1,5 +1,5 @@
 import sys
-from utils import Stack
+from stack import Stack
 from syntactic import Syntactic
 from scanner import Scanner
 
