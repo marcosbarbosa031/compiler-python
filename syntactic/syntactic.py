@@ -1,10 +1,12 @@
 from utils import Enum
 from utils import PrintErr
+from utils import CodeGenerator
 
 
 class Syntactic(object):
     token = None
     scope = 0
+    generator = CodeGenerator()
 
     def __init__ (self, scanner, stack):
         self.Scanner = scanner
@@ -66,7 +68,8 @@ class Syntactic(object):
             # print('factor: '+ self.token['lex']+'  '+str(self.token['code']))
             op = {
                 'code': self.token['code'],
-                'lex': self.token['lex']
+                'lex': self.token['lex'],
+                'qtd': self.token['qtd']
             }
             # print('op: '+str(op))
             self.token = self.Scanner.scan_file()
@@ -75,8 +78,9 @@ class Syntactic(object):
             op = self.Stack.searchAll(self.token['lex'])
             if not op: # Variavel nao declarada
                 PrintErr.print_error(self.token, "Variavel '" + self.token['lex'] + "' nao declarada.")
+            qtd = self.token['qtd']
             self.token = self.Scanner.scan_file()
-            return { 'code': op.tipo, 'lex': op.lex }
+            return { 'code': op.tipo, 'lex': op.lex, 'qtd': qtd }
         elif self.token['code'] == Enum.Tparenteses_opn:
             self.token = self.Scanner.scan_file()
             op = self.expr()
@@ -155,6 +159,7 @@ class Syntactic(object):
 
     def rel_expr(self):
         op1 = self.expr()
+        op = self.token['lex']
         if self.token['code'] == Enum.Tigual or self.token['code'] == Enum.Tdiferente or self.token['code'] == Enum.Tmaior or self.token['code'] == Enum.Tmenor or self.token['code'] == Enum.Tmaior_igual or self.token['code'] == Enum.Tmenor_igual:
             self.token = self.Scanner.scan_file()
             op2 = self.expr()
@@ -165,10 +170,19 @@ class Syntactic(object):
                     PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
                 if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
                     PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
-                if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
+                if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
                     op1['code'] = Enum.Tdigfloat
+                    # GENERATE INT TO FLOAT
+                    self.generator.gen_int_to_float(op1)
+                if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint:
+                    op2['code'] = Enum.Tdigfloat
+                    # GENERATE INT TO FLOAT
+                    self.generator.gen_int_to_float(op2)
+            op1 = self.generator.generate_code(op1, op2, op)
+            return op1
         else:
             PrintErr.print_error(self.token, "Expressao mal formada. Era esperado: Operador Relacional.")
+
 
     def attribution(self):      #OK
         if self.token['code'] == Enum.Tid:                                              # <id>
@@ -219,13 +233,19 @@ class Syntactic(object):
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tparenteses_opn:                              # "("
                 self.token = self.Scanner.scan_file()
-                self.rel_expr()                                                         # <expr_relacional>
+                op = self.rel_expr()                                               # <expr_relacional>
                 if self.token['code'] == Enum.Tparenteses_cls:                          # ")"
                     self.token = self.Scanner.scan_file()
+                    # IF GENERATOR
+                    l_aux = self.generator.if_generator(op)
                     self.command()                                                      # <comando>
                     if self.token['code'] == Enum.Telse:                                # {else <comando>}?
+                        # ELSE GENERATOR
+                        l_aux2 = self.generator.else_generator(l_aux)
                         self.token = self.Scanner.scan_file()
-                        self.command()#*
+                        self.command()
+                        print('L{}'.format(l_aux2))
+                    print('L{}'.format(l_aux))
                     # self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")

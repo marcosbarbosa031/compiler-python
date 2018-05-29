@@ -7,7 +7,8 @@ class Scanner(object):
         'code': False,
         'lex': "",
         'ln': 1,
-        'cl': 1
+        'cl': 1,
+        'qtd': -1
     }
     lexqtd = 1
     c = ""
