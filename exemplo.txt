@@ -32,7 +32,6 @@ int main() {
 
     if (w != x) 
     {
-
         x = 10;
     }else
         y = 1;

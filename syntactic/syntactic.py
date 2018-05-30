@@ -27,14 +27,20 @@ class Syntactic(object):
         return response
 
     def iteration(self):
+        # GENERATOR ITERATION
+        self.generator.iterator_l_generation()
         if self.token['code'] == Enum.Twhile:                                           # while
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tparenteses_opn:                              # "("
                 self.token = self.Scanner.scan_file()
-                self.rel_expr()                                                         # <expr_relacional>
+                op = self.rel_expr()                                                    # <expr_relacional>
                 if self.token['code'] == Enum.Tparenteses_cls:                          # ")"
                     self.token = self.Scanner.scan_file()
+                    # GENERATOR ITERATION
+                    l_aux = self.generator.if_while_generator(op)
                     self.command()                                                      # <comando>
+                    # GENERATOR ITERATION
+                    self.generator.end_while_generator(l_aux)
                 else:
                     PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ')'")
             else:
@@ -46,11 +52,13 @@ class Syntactic(object):
                 self.token = self.Scanner.scan_file()
                 if self.token['code'] == Enum.Tparenteses_opn:                          # "("
                     self.token = self.Scanner.scan_file()
-                    self.rel_expr()                                                     # <expr_relacional>
+                    op = self.rel_expr()                                                # <expr_relacional>
                     if self.token['code'] == Enum.Tparenteses_cls:                      # ")"
                         self.token = self.Scanner.scan_file()
                         if self.token['code'] == Enum.Tponto_virgula:                   # ";"
                             self.token = self.Scanner.scan_file()
+                            # GENERATE IF
+                            self.generator.if_generator(op)
                         else:
                             PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ';'")
                     else:
@@ -105,6 +113,7 @@ class Syntactic(object):
         # print("token term: "+self.token['lex']+"  "+str(self.token['code']))
         if self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:              # "*"  | "/"
             # self.token = self.Scanner.scan_file()
+            op = self.token['lex']
             while self.token['code'] == Enum.Tmult or self.token['code'] == Enum.Tdivi:
                 self.token = self.Scanner.scan_file()
                 op2 = self.factor()
@@ -116,10 +125,19 @@ class Syntactic(object):
                         PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
                     if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
                         PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
-                    if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
+                    if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
                         op1['code'] = Enum.Tdigfloat
+                        # GENERATE INT TO FLOAT
+                        self.generator.gen_int_to_float(op1)
+                    if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint:
+                        op2['code'] = Enum.Tdigfloat
+                        # GENERATE INT TO FLOAT
+                        self.generator.gen_int_to_float(op2)
                     if self.token['lex'] == Enum.Tdivi and op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigint:
                         op1['code'] = enum.Tdigfloat
+                        # GENERATE INT TO FLOAT
+                        self.generator.gen_int_to_float(op1)
+                    op1 = self.generator.generate_code(op1, op2, op)
         return op1
 
     def arit_expr(self):
@@ -136,12 +154,20 @@ class Syntactic(object):
                     PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
                 if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
                     PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
-                if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
+                if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
                     op1['code'] = Enum.Tdigfloat
+                    # GENERATE INT TO FLOAT
+                    self.generator.gen_int_to_float(op1)
+                if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint:
+                    op2['code'] = Enum.Tdigfloat
+                    # GENERATE INT TO FLOAT
+                    self.generator.gen_int_to_float(op2)
+                op1 = self.generator.generate_code(op1, op2, op)
             return op1
 
     def expr(self):
         op1 = self.term()                                                                     # <T>
+        op = self.token['lex']
         op2 = self.arit_expr()                                                                # <E'>
         # self.Stack.printTable()
         if not op2:
@@ -153,8 +179,15 @@ class Syntactic(object):
                 PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Int podem ser operadas apenas com variaveis do tipo Int ou Float.")
             if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigchar:
                 PrintErr.print_error(self.token, "Variaveis incompativeis. Variaveis Float podem ser operadas apenas com variaveis do tipo Int ou Float.")
-            if (op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat) or (op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint):
+            if op1['code'] == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
                 op1['code'] = Enum.Tdigfloat
+                # GENERATE INT TO FLOAT
+                self.generator.gen_int_to_float(op1)
+            if op1['code'] == Enum.Tdigfloat and op2['code'] == Enum.Tdigint:
+                op2['code'] = Enum.Tdigfloat
+                # GENERATE INT TO FLOAT
+                self.generator.gen_int_to_float(op2)
+            op1 = self.generator.generate_code(op1, op2, op)
         return op1
 
     def rel_expr(self):
@@ -184,17 +217,15 @@ class Syntactic(object):
             PrintErr.print_error(self.token, "Expressao mal formada. Era esperado: Operador Relacional.")
 
 
-    def attribution(self):      #OK
+    def attribution(self, op1):      #OK
         if self.token['code'] == Enum.Tid:                                              # <id>
-            op1 = self.Stack.searchAll(self.token['lex'])
-            if not op1:
-                PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+self.token['lex']+"' nao foi declarada.")
+            # op1 = self.Stack.searchAll(self.token['lex'])
+            # if not op1:
+            #     PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+self.token['lex']+"' nao foi declarada.")
             self.token = self.Scanner.scan_file()
             if self.token['code'] == Enum.Tatrib:                                       # "="
                 self.token = self.Scanner.scan_file()
                 op2 = self.expr()                                                        # <expr_arit>
-                # print('op1: '+op1.lex+'  tipo: '+str(op1.tipo))
-                # print('op2: '+op2['lex']+'  tipo: '+str(op2['code']))
                 if op1.tipo == Enum.Tdigint and op2['code'] == Enum.Tdigfloat:
                     PrintErr.print_error(self.token, "Atribuicao mal formada. A variavel '"+op2['lex']+"' do tipo Float nao pode ser atribuida a variavel '"+op1.lex+"' do tipo Int.")
                 if op1.tipo == Enum.Tdigint and op2['code'] == Enum.Tdigchar:
@@ -218,7 +249,15 @@ class Syntactic(object):
 
     def basic_command(self):    #OK
         if self.token['code'] == Enum.Tid:                                              # <atribuicao>
-            self.attribution()
+            op = self.Stack.searchAll(self.token['lex'])
+            if not op:                                                                 # Variavel nao declarada
+                PrintErr.print_error(self.token, "Variavel '" + self.token['lex'] + "' nao declarada.")
+            op1 = {'code': op.tipo, 'lex': op.lex, 'qtd': self.token['qtd']}
+            op2 = self.attribution(op)
+            # GENERATE BASIC COMMAND
+            # print('op1: {}'.format(op1))
+            # print('op2: {}'.format(op2))
+            self.generator.baisc_command_generator(op1, op2)
         elif self.token['code'] == Enum.Tchaves_opn:                                    # <bloco>
             self.block()
         else:
@@ -245,7 +284,7 @@ class Syntactic(object):
                         self.token = self.Scanner.scan_file()
                         self.command()
                         print('L{}'.format(l_aux2))
-                    print('L{}'.format(l_aux))
+                    # print('L{}'.format(l_aux))
                     # self.token = self.Scanner.scan_file()
                 else:
                     PrintErr.print_error(self.token, "Comando mal formada. Era esperado: ')'")
@@ -267,12 +306,10 @@ class Syntactic(object):
                 if self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
                     PrintErr.print_error(self.token, "Declaracao de variavel mal formada. A variavel '"+self.token['lex']+"' ja foi declarada.")
                 else:
-                    # print('lex: '+self.token['lex']+' tipo: '+str(tipo)+'  escopo: '+str(self.scope))
                     self.Stack.push(self.token['lex'], tipo, self.scope) # empilha na tabela de simbolos
                 self.token = self.Scanner.scan_file()
                 while self.token['code'] == Enum.Tvirgula:                              # {,<id>}
                     self.token = self.Scanner.scan_file()
-                    # print('lex: ' + self.token['lex'] + ' tipo: ' + str(tipo) + '  escopo: ' + str(self.scope))
                     if self.Stack.searchScope(self.token['lex'], self.scope): # Variavel ainda nao criada no escopo
                         PrintErr.print_error(self.token, "Declaracao de variavel mal formada. A variavel '"+self.token['lex']+"' ja foi declarada.")
                     else:
