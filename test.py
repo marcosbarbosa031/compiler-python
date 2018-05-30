@@ -1,4 +1,4 @@
-from utils import Stack
+from stack import Stack
 # from utils import SymbolTable
 
 print('if '),
