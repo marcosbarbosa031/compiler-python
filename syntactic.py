@@ -58,7 +58,7 @@ class Syntactic(object):
                         if self.token['code'] == Enum.Tponto_virgula:                   # ";"
                             self.token = self.Scanner.scan_file()
                             # GENERATE IF
-                            self.generator.if_generator(op)
+                            self.generator.do_while_generator(op)
                         else:
                             PrintErr.print_error(self.token, "Iteracao mal formada. Era esperado: ';'")
                     else:
@@ -278,6 +278,7 @@ class Syntactic(object):
                     # IF GENERATOR
                     l_aux = self.generator.if_generator(op)
                     self.command()                                                      # <comando>
+                    print('L{}'.format(l_aux))
                     if self.token['code'] == Enum.Telse:                                # {else <comando>}?
                         # ELSE GENERATOR
                         l_aux2 = self.generator.else_generator(l_aux)

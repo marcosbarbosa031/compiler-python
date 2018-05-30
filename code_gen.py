@@ -54,6 +54,15 @@ class CodeGenerator(object):
         self.l_count += 1
         return l_aux
 
+    def do_while_generator (self, op):
+        print('if {}'.format(op['lex'])),
+        # if op['qtd'] >= 0:
+        #     print(op['qtd']),
+        print(' != 0 goto L{}'.format(self.l_count))
+        l_aux = self.l_count
+        self.l_count += 1
+        return l_aux
+
     def else_generator (self, l_aux):
         print('goto L{}'.format(self.l_count))
         print(' L{}'.format(l_aux))
